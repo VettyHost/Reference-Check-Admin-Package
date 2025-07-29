@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reference Credential UI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+            padding: 2rem; /* Add some padding around the container */
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* Rounded corners for the main container */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px; /* Max width for better readability on large screens */
+        }
+        .dropdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb; /* Light gray border */
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none; /* No border for the last item */
+        }
+        .dropdown-item:hover {
+            background-color: #f9fafb; /* Lighter background on hover */
+        }
+        .dropdown-item span {
+            font-weight: 500;
+            color: #374151; /* Darker text color */
+        }
+        .dropdown-item svg {
+            color: #6b7280; /* Gray icon color */
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem; /* Space between radio options */
+            cursor: pointer;
+        }
+        .radio-option input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #d1d5db; /* Light gray border */
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            outline: none;
+            transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+        .radio-option input[type="radio"]:checked {
+            border-color: #2563eb; /* Blue border when checked */
+            background-color: #2563eb; /* Blue background when checked */
+            position: relative;
+        }
+        .radio-option input[type="radio"]:checked::before {
+            content: '';
+            display: block;
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: #ffffff; /* White dot inside */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .radio-option label {
+            font-weight: 400;
+            color: #4b5563; /* Medium gray text color */
+        }
+        .select-container {
+            position: relative;
+        }
+        .select-container select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            appearance: none; /* Remove default arrow */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            font-size: 1rem;
+            color: #374151;
+            cursor: pointer;
+            padding-right: 2.5rem; /* Space for custom arrow */
+        }
+        .select-container .select-arrow {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none; /* Allow clicks to pass through to select */
+            color: #6b7280;
+        }
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .collapsible-header:hover {
+            background-color: #f9fafb;
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.expanded {
+            max-height: 1000px; /* Large enough to show all content */
+            transition: max-height 0.5s ease-in;
+        }
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .question-item:last-child {
+            border-bottom: none;
+        }
+        .question-item input[type="checkbox"] {
+            margin-top: 0.25rem;
+            margin-right: 0.75rem;
+            width: 1.15rem;
+            height: 1.15rem;
+            accent-color: #2563eb; /* Blue color for checkbox */
+        }
+        .question-item .question-text {
+            flex-grow: 1;
+            color: #4b5563;
+        }
+        .question-item .sr-no {
+            font-weight: 500;
+            color: #374151;
+            width: 2rem; /* Fixed width for Sr. No. column */
+            flex-shrink: 0;
+        }
+        .price-input-container {
+            position: relative;
+            width: 100%;
+        }
+        .price-input-container input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            font-size: 1rem;
+            color: #374151;
+            outline: none;
+        }
+        .add-more-questions-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            align-self: flex-end; /* Align to bottom right */
+            margin-top: 1rem; /* Space from questions */
+            display: inline-block; /* To allow text alignment */
+        }
+        .add-more-questions-button:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="container bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800">Select Reference Credential</h2>
+        </div>
+
+        <div class="p-6">
+            <!-- Reference Mode Section -->
+            <div class="mb-6">
+                <p class="text-lg font-medium text-gray-700 mb-4">Reference Mode:</p>
+                <div class="space-y-3">
+                    <div class="radio-option">
+                        <input type="radio" id="oldVerification" name="referenceMode" value="old" checked>
+                        <label for="oldVerification" class="text-gray-700">Use old Reference Verification (no type separation)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="enhancedVerification" name="referenceMode" value="enhanced">
+                        <label for="enhancedVerification" class="text-gray-700">Use Enhanced Reference Verification (Professional / Personal / Both)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Reference Options (initially hidden) -->
+            <div id="enhancedOptions" class="border border-gray-200 rounded-lg p-4 mb-6 hidden">
+                <p class="text-lg font-medium text-gray-700 mb-4">Reference Type: <span class="text-blue-600">&#9662;</span></p>
+                <div class="space-y-3">
+                    <div class="radio-option">
+                        <input type="radio" id="professional" name="referenceType" value="professional" checked>
+                        <label for="professional" class="text-gray-700">Professional</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="personal" name="referenceType" value="personal">
+                        <label for="personal" class="text-gray-700">Personal</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="both" name="referenceType" value="both">
+                        <label for="both" class="text-gray-700">Both</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dropdown Sections -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <!-- Select Questions Section -->
+                <div id="questionsHeader" class="collapsible-header">
+                    <span>Select Questions to be asked to the reference</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="questionsContent" class="collapsible-content">
+                    <div class="p-4">
+                        <div class="flex items-center pb-2 border-b border-gray-200 mb-2">
+                            <input type="checkbox" id="selectAllQuestions" class="mr-3">
+                            <span class="sr-no font-bold text-gray-800">Sr. No.</span>
+                            <span class="font-bold text-gray-800">All Questions</span>
+                        </div>
+                        <div id="questionList">
+                            <!-- Questions will be dynamically loaded here -->
+                        </div>
+                        <div class="flex justify-end mt-4">
+                            <button class="add-more-questions-button">Add more Questions</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Number of References Section -->
+                <div id="numReferencesHeader" class="collapsible-header">
+                    <span>Number of References</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="numReferencesContent" class="collapsible-content">
+                    <div class="px-6 py-4">
+                        <p class="text-lg font-medium text-gray-700 mb-4">Choose the number of References.</p>
+                        <div class="select-container">
+                            <select id="numReferences" name="numReferences" class="block w-full">
+                                <option value="" selected>Select</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                            <div class="select-arrow">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mode of Contact Section -->
+                <div id="modeOfContactHeader" class="collapsible-header">
+                    <span>Mode of Contact</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="modeOfContactContent" class="collapsible-content">
+                    <div class="px-6 py-4">
+                        <p class="text-lg font-medium text-gray-700 mb-4">Mode of Contact</p>
+                        <div class="flex space-x-6">
+                            <div class="radio-option">
+                                <input type="radio" id="contactEmail" name="modeOfContact" value="email" checked>
+                                <label for="contactEmail" class="text-gray-700">Email</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="contactPhone" name="modeOfContact" value="phone">
+                                <label for="contactPhone" class="text-gray-700">Phone</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="contactBoth" name="modeOfContact" value="both">
+                                <label for="contactBoth" class="text-gray-700">Both</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div id="pricingHeader" class="collapsible-header">
+                    <span>Pricing</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="pricingContent" class="collapsible-content">
+                    <div class="p-4">
+                        <p class="text-base text-gray-600 mb-2">Enter price per check</p>
+                        <div class="price-input-container">
+                            <input type="text" placeholder="Enter price per check" class="block w-full">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end p-6 border-t border-gray-200 space-x-4">
+            <button class="px-6 py-2 bg-gray-200 text-gray-800 rounded-md font-medium hover:bg-gray-300 transition-colors duration-200">
+                Cancel
+            </button>
+            <button class="px-6 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors duration-200">
+                Save
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const oldVerificationRadio = document.getElementById('oldVerification');
+            const enhancedVerificationRadio = document.getElementById('enhancedVerification');
+            const enhancedOptionsDiv = document.getElementById('enhancedOptions');
+            const referenceTypeRadios = document.querySelectorAll('input[name="referenceType"]');
+
+            const questionsHeader = document.getElementById('questionsHeader');
+            const questionsContent = document.getElementById('questionsContent');
+            const questionListDiv = document.getElementById('questionList');
+            const selectAllCheckbox = document.getElementById('selectAllQuestions');
+            const questionsHeaderArrow = questionsHeader.querySelector('svg');
+
+            const numReferencesHeader = document.getElementById('numReferencesHeader');
+            const numReferencesContent = document.getElementById('numReferencesContent');
+            const numReferencesHeaderArrow = numReferencesHeader.querySelector('svg');
+
+            const modeOfContactHeader = document.getElementById('modeOfContactHeader');
+            const modeOfContactContent = document.getElementById('modeOfContactContent');
+            const modeOfContactHeaderArrow = modeOfContactHeader.querySelector('svg');
+
+            const pricingHeader = document.getElementById('pricingHeader');
+            const pricingContent = document.getElementById('pricingContent');
+            const pricingHeaderArrow = pricingHeader.querySelector('svg');
+
+
+            // Define questions based on reference type
+            const questions = {
+                old: [
+                    "What was/is the applicant's job and nature of his/her duties?",
+                    "How did he/she get along with his/her associates?",
+                    "How did he/she show initiative or leadership in his/her job?",
+                    "How long have you known him/her?",
+                    "When he/she begins a task, would you say that he/she carries it through?",
+                    "What could he/she do to improve their job performance?",
+                    "Is he/she dependable?",
+                    "In your opinion, has he/she ever shown a propensity for violence or dishonesty in the workplace?",
+                    "What would you say is his/her greatest strength?",
+                    "In your opinion, if you were responsible for the hiring process, would you consider him/her eligible for rehire?",
+                    "Do you have any additional comments?"
+                ],
+                professional: [
+                    "What was the applicant’s role and primary responsibilities in your organization?",
+                    "How would you describe their working relationship with team members and supervisors?",
+                    "Can you give an example where the applicant demonstrated initiative or leadership?",
+                    "How long did you work with the applicant and in what capacity?",
+                    "Was the applicant dependable in meeting deadlines and delivering quality work?",
+                    "In what areas could the applicant improve professionally?",
+                    "How would you rate the applicant's problem-solving and communication skills?",
+                    "Have you observed any concerning behavior such as dishonesty or conflict?",
+                    "What would you consider their greatest professional strength?",
+                    "Would you rehire or recommend this person for a similar position? Why or why not?"
+                ],
+                personal: [
+                    "How do you know the applicant and for how long?",
+                    "How would you describe their character and reliability in personal life?",
+                    "Have you observed the applicant taking responsibility or helping others in personal settings?",
+                    "How does the applicant handle stress or difficult situations in personal contexts?",
+                    "Have you ever found the applicant to be dishonest or untrustworthy?",
+                    "How would you describe their communication style and temperament?",
+                    "Do they actively contribute to their community or social circles?",
+                    "What do you believe is their strongest personal trait?",
+                    "Have you ever seen the applicant demonstrate any troubling behavior?",
+                    "Would you trust this person in a position of responsibility or care? Why or why not?"
+                ],
+                both: [
+                    "How do you know the applicant and in what capacity (personal/professional)?",
+                    "Can you describe their general behavior and attitude in your interactions?",
+                    "What qualities or traits stand out most about this person?",
+                    "Have you seen the applicant take initiative or act responsibly in any context?",
+                    "How would you describe their trustworthiness and ethics?",
+                    "Have you ever faced a situation where the applicant handled conflict or pressure?",
+                    "What is one area where they can improve (professionally or personally)?",
+                    "Have you observed any behavior that would raise concern (dishonesty, aggression)?",
+                    "What values or principles does this person seem to live by?",
+                    "Would you recommend this person for a role requiring integrity and reliability? Why or why not?"
+                ]
+            };
+
+            // Function to render questions based on selected type
+            const renderQuestions = (type) => {
+                questionListDiv.innerHTML = ''; // Clear existing questions
+                const currentQuestions = questions[type] || [];
+                if (currentQuestions.length > 0) {
+                    currentQuestions.forEach((question, index) => {
+                        const questionItem = document.createElement('div');
+                        questionItem.classList.add('question-item');
+                        questionItem.innerHTML = `
+                            <input type="checkbox" id="question${index + 1}" name="question${index + 1}" value="${question}" checked>
+                            <span class="sr-no">${index + 1}</span>
+                            <label for="question${index + 1}" class="question-text">${question}</label>
+                        `;
+                        questionListDiv.appendChild(questionItem);
+                    });
+                    selectAllCheckbox.checked = true; // Check select all by default
+                } else {
+                    questionListDiv.innerHTML = '<p class="text-gray-500 p-4">No questions available for this type.</p>';
+                    selectAllCheckbox.checked = false;
+                }
+                // Ensure questions content is expanded if questions are rendered, collapsed otherwise
+                if (currentQuestions.length > 0 && questionsHeader.dataset.expanded === 'true') {
+                    questionsContent.classList.add('expanded');
+                    questionsHeaderArrow.classList.add('rotate-180');
+                } else {
+                    questionsContent.classList.remove('expanded');
+                    questionsHeaderArrow.classList.remove('rotate-180');
+                }
+            };
+
+            // Function to update questions based on selected reference mode and type
+            const updateQuestionsSection = () => {
+                if (enhancedVerificationRadio.checked) {
+                    enhancedOptionsDiv.classList.remove('hidden');
+                    // Ensure a reference type is selected if none is
+                    let selectedTypeRadio = document.querySelector('input[name="referenceType"]:checked');
+                    if (!selectedTypeRadio) {
+                        document.getElementById('professional').checked = true;
+                        selectedTypeRadio = document.getElementById('professional'); // Update reference
+                    }
+                    renderQuestions(selectedTypeRadio.value);
+                } else {
+                    enhancedOptionsDiv.classList.add('hidden');
+                    renderQuestions('old'); // Load old verification questions
+                }
+            };
+
+            // Toggle select all questions
+            selectAllCheckbox.addEventListener('change', (event) => {
+                const checkboxes = questionListDiv.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = event.target.checked;
+                });
+            });
+
+            // Event listeners for reference mode radios
+            oldVerificationRadio.addEventListener('change', updateQuestionsSection);
+            enhancedVerificationRadio.addEventListener('change', updateQuestionsSection);
+
+            // Event listeners for reference type radios
+            referenceTypeRadios.forEach(radio => {
+                radio.addEventListener('change', () => renderQuestions(radio.value));
+            });
+
+            // Collapsible functionality for questions section
+            questionsHeader.addEventListener('click', () => {
+                questionsContent.classList.toggle('expanded');
+                questionsHeaderArrow.classList.toggle('rotate-180');
+                questionsHeader.dataset.expanded = questionsContent.classList.contains('expanded');
+            });
+
+            // Collapsible functionality for Number of References section
+            numReferencesHeader.addEventListener('click', () => {
+                numReferencesContent.classList.toggle('expanded');
+                numReferencesHeaderArrow.classList.toggle('rotate-180');
+            });
+
+            // Collapsible functionality for Mode of Contact section
+            modeOfContactHeader.addEventListener('click', () => {
+                modeOfContactContent.classList.toggle('expanded');
+                modeOfContactHeaderArrow.classList.toggle('rotate-180');
+            });
+
+            // Collapsible functionality for pricing section
+            pricingHeader.addEventListener('click', () => {
+                pricingContent.classList.toggle('expanded');
+                pricingHeaderArrow.classList.toggle('rotate-180');
+            });
+
+            // Initial setup on page load
+            // Set all collapsible sections to be initially minimized
+            questionsContent.classList.remove('expanded');
+            questionsHeaderArrow.classList.remove('rotate-180');
+            numReferencesContent.classList.remove('expanded');
+            numReferencesHeaderArrow.classList.remove('rotate-180');
+            modeOfContactContent.classList.remove('expanded');
+            modeOfContactHeaderArrow.classList.remove('rotate-180');
+            pricingContent.classList.remove('expanded');
+            pricingHeaderArrow.classList.remove('rotate-180');
+
+            // Set initial state for questions based on default radio selection
+            updateQuestionsSection();
+        });
+    </script>
+</body>
+</html>
